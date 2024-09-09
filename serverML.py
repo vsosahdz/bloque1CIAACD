@@ -2,9 +2,8 @@
 from flask import Flask, request, jsonify, render_template
 import numpy as np
 import joblib
-# Files management
-import os
-from werkzeug.utils import secure_filename
+
+
 
 # Load model
 dt=joblib.load('dt1.joblib')
@@ -31,28 +30,6 @@ def predictjson():
 @server.route("/formulario",methods=['GET'])
 def formulario():
     return render_template('pagina.html')
-
-#Envio de datos a través de Archivos
-@server.route('/modeloFile', methods=['POST'])
-def modeloFile():
-    f = request.files['file']
-    filename=secure_filename(f.filename)
-    path=os.path.join(os.getcwd(),'files',filename)
-    f.save(path)
-    file = open(path, "r")
-    
-    for x in file:
-        info=x.split()
-    print(info)
-    datosEntrada = np.array([
-            float(info[0]),
-            float(info[1]),
-            float(info[2])
-        ])
-    #Utilizar el modelo
-    resultado=dt.predict(datosEntrada.reshape(1,-1))
-    #Regresar la salida del modelo
-    return jsonify({"Resultado":str(resultado[0])})
 
 #Envio de datos a través de Forms
 @server.route('/modeloForm', methods=['POST'])
